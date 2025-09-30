@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="ur3_with_2f85">
+  <xacro:arg name="prefix" default=""/>
+
+  <xacro:include filename="$(find ur_description)/urdf/inc/ur3_macro.xacro"/>
+  <xacro:ur3_robot prefix="$(arg prefix)"/>
+
+
+  <xacro:include filename="$(find ur3_with_gripper_description)/urdf/robotiq_patched/robotiq_arg2f_85_model_macro_gz.xacro"/>
+
+  <xacro:robotiq_arg2f_85 prefix="$(arg prefix)rg_"/>
+
+	<link name="$(arg prefix)rg_adapter">
+	  <inertial><origin xyz="0 0 0"/><mass value="0.05"/>
+	    <inertia ixx="6e-5" ixy="0" ixz="0" iyy="6e-5" iyz="0" izz="6e-5"/></inertial>
+	  <visual><origin xyz="0 0 0"/><geometry><box size="0.05 0.05 0.004"/></geometry></visual>
+	  <collision><origin xyz="0 0 0"/><geometry><box size="0.05 0.05 0.004"/></geometry></collision>
+	</link>
+
+
+	<joint name="$(arg prefix)rg_adapter_mount" type="fixed">
+	  <parent link="$(arg prefix)tool0"/>
+	  <child  link="$(arg prefix)rg_adapter"/>
+	  <origin xyz="0 0 0" rpy="0 0 0"/>
+	</joint>
+
+	<joint name="$(arg prefix)gripper_mount_fixed" type="fixed">
+	  <parent link="$(arg prefix)rg_adapter"/>
+	  <child  link="$(arg prefix)rg_robotiq_arg2f_base_link"/>
+	  <origin xyz="0 0 0.01" rpy="0 0 0"/>
+	</joint>
+
+	<gazebo>
+		<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
+	</gazebo>
+
+</robot>
+

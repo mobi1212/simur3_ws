@@ -1,0 +1,53 @@
+# 發布 /joint_states，讓 RViz/MoveIt 看到真實關節狀態
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 100
+
+# UR3 六軸（位置軌跡控制）
+arm_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - shoulder_pan_joint
+    - shoulder_lift_joint
+    - elbow_joint
+    - wrist_1_joint
+    - wrist_2_joint
+    - wrist_3_joint
+  constraints:
+    goal_time: 2.0
+    stopped_velocity_tolerance: 0.05
+    shoulder_pan_joint: {trajectory: 0.1, goal: 0.05}
+    shoulder_lift_joint: {trajectory: 0.1, goal: 0.05}
+    elbow_joint: {trajectory: 0.1, goal: 0.05}
+    wrist_1_joint: {trajectory: 0.1, goal: 0.05}
+    wrist_2_joint: {trajectory: 0.1, goal: 0.05}
+    wrist_3_joint: {trajectory: 0.1, goal: 0.05}
+  gains:  # Gazebo 下 Position 介面常見 PID，先給保守值，之後可調
+    shoulder_pan_joint: {p: 200.0, i: 1.0, d: 10.0, i_clamp: 1.0}
+    shoulder_lift_joint: {p: 200.0, i: 1.0, d: 10.0, i_clamp: 1.0}
+    elbow_joint:         {p: 150.0, i: 1.0, d: 8.0,  i_clamp: 1.0}
+    wrist_1_joint:       {p: 100.0, i: 0.5, d: 5.0,  i_clamp: 0.5}
+    wrist_2_joint:       {p: 80.0,  i: 0.5, d: 4.0,  i_clamp: 0.5}
+    wrist_3_joint:       {p: 60.0,  i: 0.3, d: 3.0,  i_clamp: 0.3}
+
+# 夾爪主關節（只有這一個；其餘全 mimic）
+gripper_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - rg_finger_joint
+  constraints:
+    goal_time: 2.0
+    stopped_velocity_tolerance: 0.05
+    rg_finger_joint: {trajectory: 0.1, goal: 0.02}
+  gains:
+    rg_finger_joint: {p: 80.0, i: 0.5, d: 2.0, i_clamp: 0.5}
+
+gazebo_ros_control:
+  pid_gains:
+    shoulder_pan_joint:  {p: 200.0, i: 1.0, d: 10.0, i_clamp: 1.0}
+    shoulder_lift_joint: {p: 200.0, i: 1.0, d: 10.0, i_clamp: 1.0}
+    elbow_joint:         {p: 150.0, i: 1.0, d: 8.0,  i_clamp: 1.0}
+    wrist_1_joint:       {p: 100.0, i: 0.5, d: 5.0,  i_clamp: 0.5}
+    wrist_2_joint:       {p: 80.0,  i: 0.5, d: 4.0,  i_clamp: 0.5}
+    wrist_3_joint:       {p: 60.0,  i: 0.3, d: 3.0,  i_clamp: 0.3}
+    rg_finger_joint:     {p: 80.0,  i: 0.5, d: 2.0,  i_clamp: 0.5}

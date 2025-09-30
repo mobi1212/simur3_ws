@@ -1,0 +1,23 @@
+<launch>
+  <!-- 1) 開空世界（先暫停、有 GUI） -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="true"/>
+    <arg name="gui" value="true"/>
+  </include>
+
+  <!-- 2) robot_description（用 xacro 產 URDF） -->
+  <arg name="urdf_xacro" default="$(find ur3_with_gripper_description)/urdf/ur3_with_2f85.urdf.xacro"/>
+  <param name="robot_description" command="$(find xacro)/xacro $(arg urdf_xacro)"/>
+
+  <!-- 3) 先載控制器參數（含 gazebo_ros_control.pid_gains） -->
+  <rosparam file="$(find ur3_with_gripper_description)/config/ur3_robotiq_controllers.yaml" command="load"/>
+
+  <!-- 4) spawn 模型進 Gazebo -->
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_ur3_with_2f85" output="screen"
+        args="-param robot_description -urdf -model ur3_with_2f85"/>
+
+  <!-- 5) 啟控制器（等 /clock 出現才啟，避免卡住） -->
+ <node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen"
+      args="--timeout 0 joint_state_controller arm_controller gripper_controller"/>
+
+</launch>
